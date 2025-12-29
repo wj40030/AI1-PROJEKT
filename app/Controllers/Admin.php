@@ -82,7 +82,9 @@ class Admin extends Controller {
                 'title' => $_POST['title'],
                 'description' => $_POST['description'],
                 'release_year' => (int)$_POST['release_year'],
-                'is_series' => isset($_POST['is_series']) ? 1 : 0
+                'is_series' => isset($_POST['is_series']) ? 1 : 0,
+                'categories' => $_POST['categories'] ?? [],
+                'streamings' => $_POST['streamings'] ?? []
             ];
             $this->movieModel->save($movieData);
             header('Location: ' . URLROOT . '/admin');
@@ -92,6 +94,41 @@ class Admin extends Controller {
     public function delete_movie(int $id): void {
         if (!$this->isLoggedIn()) return;
         $this->movieModel->delete($id);
+        header('Location: ' . URLROOT . '/admin');
+    }
+
+    // Zarządzanie kategoriami
+    public function add_category(): void {
+        if (!$this->isLoggedIn()) return;
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $data = ['name' => $_POST['name']];
+            $this->categoryModel->save($data);
+            header('Location: ' . URLROOT . '/admin');
+        }
+    }
+
+    public function delete_category(int $id): void {
+        if (!$this->isLoggedIn()) return;
+        $this->categoryModel->delete($id);
+        header('Location: ' . URLROOT . '/admin');
+    }
+
+    // Zarządzanie streamingami
+    public function add_streaming(): void {
+        if (!$this->isLoggedIn()) return;
+        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            $data = [
+                'name' => $_POST['name'],
+                'url' => $_POST['url']
+            ];
+            $this->streamingModel->save($data);
+            header('Location: ' . URLROOT . '/admin');
+        }
+    }
+
+    public function delete_streaming(int $id): void {
+        if (!$this->isLoggedIn()) return;
+        $this->streamingModel->delete($id);
         header('Location: ' . URLROOT . '/admin');
     }
 }

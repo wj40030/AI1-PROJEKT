@@ -84,6 +84,40 @@ class Movie extends Model {
         $this->db->bind(':release_year', $data['release_year']);
         $this->db->bind(':is_series', $data['is_series']);
         
-        return $this->db->execute();
+        if ($this->db->execute()) {
+            $movieId = isset($data['id']) ? $data['id'] : $this->db->lastInsertId();
+            
+            // Obsługa kategorii
+            if (isset($data['categories'])) {
+                $this->db->query("DELETE FROM movie_categories WHERE movie_id = :movie_id");
+                $this->db->bind(':movie_id', $movieId);
+                $this->db->execute();
+                
+                foreach ($data['categories'] as $catId) {
+                    $this->db->query("INSERT INTO movie_categories (movie_id, category_id) VALUES (:movie_id, :category_id)");
+                    $this->db->bind(':movie_id', $movieId);
+                    $this->db->bind(':category_id', $catId);
+                    $this->db->execute();
+                }
+            }
+            
+            // Obsługa streamingów
+            if (isset($data['streamings'])) {
+                $this->db->query("DELETE FROM movie_streamings WHERE movie_id = :movie_id");
+                $this->db->bind(':movie_id', $movieId);
+                $this->db->execute();
+                
+                foreach ($data['streamings'] as $streamId) {
+                    $this->db->query("INSERT INTO movie_streamings (movie_id, streaming_id) VALUES (:movie_id, :streaming_id)");
+                    $this->db->bind(':movie_id', $movieId);
+                    $this->db->bind(':streaming_id', $streamId);
+                    $this->db->execute();
+                }
+            }
+            
+            return true;
+        }
+        
+        return false;
     }
 }

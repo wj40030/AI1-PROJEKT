@@ -3,7 +3,7 @@
 namespace Core;
 
 class Router {
-    protected $currentController = 'App\\Controllers\\Pages';
+    protected $currentController = 'App\\Controllers\\Movies';
     protected string $currentMethod = 'index';
     protected array $params = [];
 
@@ -15,7 +15,10 @@ class Router {
             unset($url[0]);
         }
 
-        require_once '../app/Controllers/' . (str_replace('App\\Controllers\\', '', $this->currentController)) . '.php';
+        $controllerFile = '../app/Controllers/' . (str_replace('App\\Controllers\\', '', $this->currentController)) . '.php';
+        if (file_exists($controllerFile)) {
+            require_once $controllerFile;
+        }
         $this->currentController = new $this->currentController;
 
         if (isset($url[1])) {

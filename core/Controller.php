@@ -4,7 +4,10 @@ namespace Core;
 
 class Controller {
     public function model(string $model) {
-        require_once '../app/Models/' . $model . '.php';
+        $modelPath = '../app/Models/' . $model . '.php';
+        if (file_exists($modelPath)) {
+            require_once $modelPath;
+        }
         $fullModelName = 'App\\Models\\' . $model;
         
         // Wstrzykiwanie zależności bazy danych
